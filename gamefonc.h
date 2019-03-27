@@ -24,6 +24,8 @@ int j ;
 int h ; 
 }menus ;
 
+/***************************************/
+
 typedef struct{
 Mix_Music *music;
 SDL_Surface *fenetre ;
@@ -33,6 +35,9 @@ SDL_Rect pos ;
 int run ; 
 SDL_Rect camera ;
 }stage ;
+
+/*****************************************/
+
 typedef struct {
 SDL_Surface *man ;
 SDL_Rect pos1 ;
@@ -40,11 +45,32 @@ SDL_Surface *carre ;
 SDL_Rect pos2 ;
 SDL_Event event ;
 } manr;
+
+/*****************************************/
+
+typedef struct {
+int Num_try ;
+int Num_en ;
+int t[2] ; 
+SDL_Surface *menueng ; 
+SDL_Rect posg ; 
+SDL_Surface *reponse[3] ;
+int selec[3] ;
+SDL_Rect posen[3] ;
+}enigme ; 
+
+
 void action (stage  *sta,manr *manj,menus *menu );
-int showmenu(stage *sta,menus *menu );
+int  showmenu(stage *sta,menus *menu );
 void menufree( stage *sta,menus *menu);
-void event (stage *sta);
-void update (manr *manj,stage *sta);
+int collision (SDL_Rect pos1 ,SDL_Rect pos2);
+void eveent (stage *sta, int bol[]);
 void dispose (stage *sta,manr *manj);
-void scroll (stage *sta,manr *manj);
+void Position_Update (stage *sta,manr *manj);
+void intialiser_en (enigme *en );
+int menigme(enigme  *en,stage *sta );
+void freeenigme(enigme *en);
+void freesurface(stage *sta , manr *manj);
+void intial (enigme *en );
+int reponse (enigme *en,int j);
 #endif
