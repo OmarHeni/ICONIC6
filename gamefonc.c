@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mixer.h>
 #include <SDL/SDL_ttf.h>
-#include"gamefonc.h"
+#include "gamefonc.h"
 SDL_Surface* convpng(char nom[]){
 SDL_Surface *tmp ;
 SDL_Surface *bouton ;
@@ -16,7 +18,7 @@ if(!tmp) {
 bouton=SDL_DisplayFormatAlpha(tmp) ;
 return bouton ;
 }
-
+/*************************************/
 SDL_Rect getrect(int x,int y,int w, int h){
 SDL_Rect pos ;
 pos.x = x;
@@ -25,6 +27,113 @@ pos.w=w;
 pos.h=h ;
 return pos ;
 }
+/************************************************/
+void shield_pos(manr *manj){
+switch (manj->direc){
+case 1 :
+switch (manj->pos){
+case 0 :
+manj->spos = getrect(manj->pos1.x+4,34+manj->pos1.y,20,34);
+break;
+case 1:
+manj->spos = getrect(4+manj->pos1.x,42-manj->part[1].y+manj->pos1.y,20,34);
+break;
+case 3 :
+manj->spos = getrect(4+manj->pos1.x,146-manj->part[3].y+manj->pos1.y,20,34);
+break;
+case 5 :
+manj->spos = getrect(4+manj->pos1.x,253-manj->part[5].y+manj->pos1.y,20,34);
+break; 
+}
+break;
+case 0 : 
+switch (manj->pos){
+case 0 :
+manj->spos = getrect(34+manj->pos1.x,59+manj->pos1.y,20,34);
+break;
+case 1:
+manj->spos = getrect((110-manj->part[1].x)+manj->pos1.x,42-manj->part[1].y+manj->pos1.y,20,34);
+break;
+case 3 :
+manj->spos = getrect((110-manj->part[3].x)+manj->pos1.x,146-manj->part[3].y+manj->pos1.y,20,34);
+break;
+case 5 :
+manj->spos = getrect((114-manj->part[5].x)+manj->pos1.x,253-manj->part[5].y+manj->pos1.y,20,34);
+break;
+}
+break; 
+}
+}
+
+
+/**************************************/
+void intial_enemie(enemie *enm){
+switch (enm->direc){
+case 0 :
+enm->sen = convpng("Group 1.png");
+enm->enpart[0]=getrect(0,0,41,107);
+enm->enpart[1]=getrect(66,0,51,107);
+enm->enpart[2]=getrect(122,0,67,107);
+enm->enpart[3]=getrect(199,0,60,107);
+enm->enpart[4]=getrect(278,0,49,107);
+enm->enpart[5]=getrect(354,0,41,107);
+enm->enpart[6]=getrect(395,0,68,107);
+enm->enpart[7]=getrect(0,106,41,107);
+enm->enpart[8]=getrect(55,125,59,95);
+enm->enpart[9]=getrect(119,139,63,86);
+enm->enpart[10]=getrect(188,155,97,60);
+enm->enpart[11]=getrect(285,165,120,50);
+enm->enpart[12]=getrect(407,165,137,50);
+enm->enpart[13]=getrect(0,222,41,107);
+enm->enpart[14]=getrect(71,222,51,119);
+enm->enpart[15]=getrect(131,222,72,119);
+enm->enpart[16]=getrect(211,222,86,119);
+break;
+case 1 :
+enm->sen = convpng("Group 2.png");
+enm->enpart[0]=getrect(497,0,41,107);
+enm->enpart[1]=getrect(423,0,51,107);
+enm->enpart[2]=getrect(346,0,67,107);
+enm->enpart[3]=getrect(265,0,60,107);
+enm->enpart[4]=getrect(193,0,49,107);
+enm->enpart[5]=getrect(149,0,41,107);
+enm->enpart[6]=getrect(82,0,68,107);
+enm->enpart[7]=getrect(497,110,41,107);
+enm->enpart[8]=getrect(427,125,59,95);
+enm->enpart[9]=getrect(458,140,63,86);
+enm->enpart[10]=getrect(260,155,97,60);
+enm->enpart[11]=getrect(138,165,120,50);
+enm->enpart[12]=getrect(0,165,137,50);
+enm->enpart[13]=getrect(497,222,41,107);
+enm->enpart[14]=getrect(413,224,51,119);
+enm->enpart[15]=getrect(340,224,72,119);
+enm->enpart[16]=getrect(235,224,99,119);
+break;
+}
+}
+
+
+
+
+/*************************************/
+
+void intialmpos (enemie *enm, int try  ){
+switch (try){
+case 0:
+enm->bpos=getrect(enm->posenm.x,enm->posenm.y+16,20,20);
+break;
+case 1 :
+enm->bpos=getrect(enm->posenm.x,enm->posenm.y+40,20,20);
+break;
+case 2 :
+enm->bpos=getrect(enm->posenm.x,enm->posenm.y+60,20,20);
+break;
+}
+ }
+
+
+/****************************/
+
 
 void setpos(SDL_Rect posm[]){
 posm[0]=getrect(0,0,1180,192);
@@ -34,13 +143,42 @@ posm[3]=getrect(3540,0,1180,192);
 posm[4]=getrect(4720,0,1180,192);
 }
 
+/*************************/
 
+void inital_part(manr *manj,int i){
+switch (i){
+case 0 :
+manj->man=convpng("Group 4.png");
+manj->part[0]=getrect(0,0,58,106);
+manj->part[1]=getrect(75,0,67,106);
+manj->part[2]=getrect(0,120,58,106);
+manj->part[3]=getrect(75,120,67,106);
+manj->part[4]=getrect(0,250,58,106);
+manj->part[5]=getrect(75,250,67,106);
+break;
+case 1 :
+manj->man=convpng("Group 5.png");
+manj->part[0]=getrect(78,0,58,106);
+manj->part[1]=getrect(0,0,67,106);
+manj->part[2]=getrect(78,120,58,106);
+manj->part[3]=getrect(0,120,67,106);
+manj->part[4]=getrect(78,250,58,106);
+manj->part[5]=getrect(0,250,67,106);
+break;
+}
+}
 
-void action (stage  *sta,manr *manj,menus *menu ){
+/**************************/
+
+void action (stage *sta,manr *manj,menus *menu , machine *mach,enemie *enm ){
+int i;
 SDL_Surface *tmp=NULL;
 sta->fenetre=NULL ;
+    char chemin[]="/dev/ttyACM0";
 manj->man =NULL ;
+manj->pos=0;
 SDL_Color color={255,255,255};
+manj->font= TTF_OpenFont("BebasNeue Book.ttf",32);
 menu->font= TTF_OpenFont("BebasNeue Book.ttf",32);
 if (Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,2048)==-1){
 printf ("%s  \n",Mix_GetError());
@@ -51,17 +189,32 @@ if(!menu->musicb) {
     printf("Mix_LoadWAV: %s\n", Mix_GetError());
     // handle error
 }
+//enm->prec = SDL_GetTicks();
+enm->direc = 0 ;
+intial_enemie(enm);
+enm->posenm=getrect(1500,300,41,107);
+mach ->mpos=getrect(955,300,255,146);
 setpos(menu->posm);
 sta->fenetre = SDL_SetVideoMode(1180,600,32,SDL_HWSURFACE | SDL_DOUBLEBUF);
 SDL_WM_SetCaption("Tate no yusha",NULL);
 
+mach->i = 0;
+manj->sscore=TTF_RenderText_Solid(menu->font,"0 XP",color);
 menu->iconic=TTF_RenderText_Solid(menu->font,"ICONIC6",color);
 if (!menu->iconic){
     printf("Problem %s\n", Mix_GetError());
 }
+    sta->f=fopen(chemin,"r+");
+    if(sta->f == NULL)
+printf ("Erreur d'ouverture du fichier \n");
+manj->barre = convpng("LifeBarE.png");
+manj->song = convpng("sang.png");
+SDL_GetClipRect(manj->sscore,&manj->possco);
+manj->possco.x=350;
 SDL_GetClipRect(menu->iconic,&menu->posi);
 menu->posi.x=(590-(menu->posi.w/2));
 menu->posi.y=(600-(menu->posi.h));
+manj->score=0;
 menu->boutonsa[0]=IMG_Load("menu/menu0.jpg");
 menu->boutonsa[1]=IMG_Load("menu/menu1.jpg");
 menu->boutonsa[2]=IMG_Load("menu/menu2.jpg");
@@ -70,6 +223,8 @@ menu->boutons[0]=IMG_Load("menu/menus0.jpg");
 menu->boutons[1]=IMG_Load("menu/menus1.jpg");
 menu->boutons[2]=IMG_Load("menu/menus2.jpg");
 menu->boutons[3]=IMG_Load("menu/menus3.jpg");
+manj->vie = 230 ;
+intialmpos(enm,0);
 menu->poss[0]=getrect(454,199,263,49);
 menu->poss[1]=getrect(452,285,263,49);
 menu->poss[2]=getrect(456,377,263,49);
@@ -78,27 +233,35 @@ menu->poss1[0]=getrect(257,196,664,53);
 menu->poss1[1]=getrect(257,281,664,53);
 menu->poss1[2]=getrect(257,375,664,53);
 menu->poss1[3]=getrect(257,465,664,53);
+enm->ball = convpng("ball.png");
+mach->gun = convpng("machine.png");
 menu->menua = SDL_LoadBMP("menu/menuan.bmp");
 menu->menu =IMG_Load("menu/menud.jpg");
 sta->paysage=SDL_LoadBMP("/home/omar/gr.bmp");
-manj->carre = IMG_Load("carre.jpg");
+manj->carre = convpng("drapeau.png");
+
 if(!manj->carre) {
     printf("Surface : %s\n", Mix_GetError());
     // handle error
 }
 SDL_GetClipRect(manj->carre,&manj->pos2);
 SDL_GetClipRect(sta->paysage,&sta->pos);
-tmp = IMG_Load("/home/omar/skar.png");
-manj->man=SDL_DisplayFormatAlpha(tmp);
-SDL_GetClipRect(manj->man,&manj->pos1);
+manj->direc= 0 ;
+inital_part(manj,0);
+for (i=0;i<3;i++){
+manj->bol[i]=0;
+}
 manj->pos2.x=2000;
 manj->pos2.y=300;
-manj->pos1.x=0;
-manj->pos1.y=300;
-sta->camera=getrect(0,0,600,1180);
+manj->pos1=getrect(0,300,58,106);
+manj->spart=getrect(0,0,230,25);
+manj->sangpos=getrect(43,11,230,25);
+sta->ecran=getrect(0,0,1180,600);
+sta->camera=getrect(0,0,1180,600);
+shield_pos(manj);
 }
 
-/*****************************************/
+/****************************************/
 
 int showmenu(stage *sta,menus *menu ){
 int x,y,i,signe ;
@@ -326,10 +489,16 @@ en->selec[i]=0 ;
 en->Num_try = 0 ;
 }
 
+/*******************************************************/
+
 void intialiser_en (enigme *en ){
 en->t[0]= 0 ;
 en->Num_en = rand()%6+1 ;
+en->post= getrect(1000,0,0,0);
+en->font= TTF_OpenFont("BebasNeue Book.ttf",32);
+en->prec=SDL_GetTicks();
 printf ("num = %d \n",en->Num_en);
+en->tmp  = 0 ;
 // declaer les positon 
 en->posen[0]=getrect(12,185,551,108);
 en->posen[1]=getrect(48,275,551,134);
@@ -377,6 +546,7 @@ break ;
 }
 }
 
+/******************************************/
 
 int menigme(enigme  *en,stage *sta ){
 int x,y,i ;
@@ -435,6 +605,7 @@ SDL_Flip(sta->fenetre);
 return -1;
 }
 
+/*************************************************/
 
 int reponse (enigme *en ,int j){
 FILE *fic ;
@@ -457,6 +628,9 @@ return 0 ;
 }
 }
 
+/****************************************/
+
+/******************************************/
 void freeenigme(enigme *en){
 int i; 
 SDL_FreeSurface(en->menueng);
@@ -502,6 +676,35 @@ return 0 ;
 return 1 ;
 }
 
+/****************************************************/
+
+void Arduino_Update(stage *sta,manr *manj)
+{
+static int x ;
+int d;
+    fscanf(sta->f,"%d",&d);
+if (d==1){
+manj->bol[0]=1 ;
+}else if (d==0) {
+manj->bol[0]=0;
+}
+if (collision(manj->pos1,manj->pos2)){
+printf ("here \n");
+    fprintf(sta->f,"c%d\n",1);
+x=1 ;
+}else if (!collision(manj->pos1,manj->pos2) && x==1){
+printf ("here 2\n");
+    fprintf(sta->f,"c%d\n",0);
+x=0 ;
+}
+}
+/*void arduino_Write(stage *sta){
+    fprintf(sta->f,"c%d\n",1);
+
+}
+*/
+/*****************************************************/
+
 void jump (manr *manj){
 static int i = (-5) ; 
 static int j = 0 ;
@@ -516,17 +719,32 @@ j=0 ;
 }
 }
 
-void dispose (stage *sta,manr *manj){
+/*************************************************/
+
+void dispose (stage *sta,manr *manj,machine *mach,enemie *enm){
 SDL_BlitSurface(sta->paysage,&sta->camera,sta->fenetre,NULL);
-SDL_BlitSurface(manj->man,NULL,sta->fenetre, & manj->pos1);
+if (manj->pos2.x>0){
 SDL_BlitSurface(manj->carre,NULL,sta->fenetre,&manj->pos2);
+}
+//SDL_BlitSurface(mach->gun,NULL,sta->fenetre,&mach->mpos);
+printf ("%d | %d \n",enm->bpos.x,enm->bpos.y);
+if (!collision(enm->bpos,enm->posenm)){
+SDL_BlitSurface(enm->ball,NULL,sta->fenetre,&enm->bpos);
+}
+SDL_BlitSurface(manj->man,&manj->part[manj->pos],sta->fenetre, & manj->pos1);
+SDL_BlitSurface(manj->barre,NULL,sta->fenetre,NULL);
+SDL_BlitSurface(manj->song,&manj->spart,sta->fenetre,&manj->sangpos);
+SDL_BlitSurface(manj->sscore,NULL,sta->fenetre,&manj->possco);
+/*printf("pos = %d | %d | %d | %d \n",enm->enpart[enm->part].x,enm->enpart[enm->part].y,enm->enpart[enm->part].w,enm->enpart[enm->part].h);*/
+SDL_BlitSurface(enm->sen,&enm->enpart[enm->part],sta->fenetre,&enm->posenm);
 SDL_Flip(sta->fenetre);
 }
 
 /*********************************************************/
 
 
-void eveent (stage *sta, int bol[]){
+void eveent (stage *sta,manr *manj){
+SDL_EnableKeyRepeat(0,SDL_DEFAULT_REPEAT_INTERVAL);
 SDL_PollEvent(&sta->event);
 switch (sta->event.type){
 case SDL_QUIT :
@@ -535,61 +753,99 @@ break;
 case SDL_KEYDOWN :
 switch (sta->event.key.keysym.sym){
 case SDLK_RIGHT :
-bol[0]=1;
+manj->bol[0]=1;
 break;
 case SDLK_LEFT : 
-bol[1]=1;
+manj->bol[1]=1;
 break;
 case SDLK_UP :
-bol[2]=1;
+if (manj->bol[4]==1){
+if (manj->pos<5){
+manj->pos+=2;
+}
+}else {
+manj->bol[2]=1;
+}
+break; 
+case SDLK_DOWN : 
+if (manj->bol[4]==1){
+if (manj->pos>1){
+manj->pos-=2;
+}
+}else {
+manj->bol[2]=1;
+}
 break;
 case SDLK_ESCAPE :
 sta->run =0;
+case SDLK_x :
+if (manj->bol[4]==0){
+manj->bol[4]=1;
+}else  {
+manj->bol[4]=0;
+}
+if (manj->bol[4]==1){
+if (manj->pos%2==0){
+manj->pos++ ;
+}
+}else {
+manj->pos = 0 ;
+}
 break;
 }
 break;
 case SDL_KEYUP :
 switch (sta->event.key.keysym.sym){
 case SDLK_RIGHT :
-bol[0]=0 ;
+manj->bol[0]=0 ;
 break;
 case SDLK_LEFT : 
-bol[1]=0;
+manj->bol[1]=0;
 break;
 }
 break;
 }
 }
+
+/***************************************************/
+
 
 
 /***************************************************/
 
 void Position_Update (stage *sta,manr *manj){
-static int bol[3]={0,0,0};
 static int o = 0 ;
 static int jp = 10 ;
-sta->camera.w=1180;
-sta->camera.h=600;
-eveent (sta,bol);
-if (bol[0]==1){
-if (!collision(manj->pos1,manj->pos2)){
-if (manj->pos1.x<800){
+shield_pos(manj);
+eveent (sta,manj);
+if (manj->bol[0]==1){
+if (manj->direc==1){
+printf ("here \n");
+inital_part(manj,0);
+manj->direc = 0 ;
+}
+manj->pos2.x-=5 ;
+if (manj->pos1.x<1000){
 manj->pos1.x+=10;
 }
-else if (manj->pos1.x>=800){
+else if (manj->pos1.x>=1000){
 (sta->camera.x)+=5;
-manj->pos2.x-=5 ;
+
 }
+}if (manj->bol[1]==1){
+if (manj->direc==0){
+printf ("here \n");
+inital_part(manj,1);
+manj->direc = 1 ;
 }
-}else if (bol[1]==1){
-if (manj->pos1.x>400){
+manj->pos2.x+=5 ;
+if (manj->pos1.x>200){
 manj->pos1.x-=10;
 }
-else if (manj->pos1.x<=400){
+else if (manj->pos1.x<=200){
 (sta->camera.x)-=5;
-manj->pos2.x+=5 ;
 }
-}else if (bol[2]==1){
+}if (manj->bol[2]==1){
 manj->pos1.y-=jp ;
 o++;
 if (o%2==0){
@@ -600,7 +856,7 @@ if (sta->camera.x>=(2000-800)){
 sta->camera.x=0;
 }
 if (manj->pos1.y>=300){
-bol[2]=0;
+manj->bol[2]=0;
 manj->pos1.y=300;
 jp =(-jp);
 }
@@ -610,11 +866,145 @@ sta->camera.x=0;
 SDL_Flip(sta->fenetre);
 }
 
-void freesurface(stage *sta , manr *manj){
+/**********************************************/
+
+void freesurface(stage *sta , manr *manj ){
 SDL_FreeSurface(manj->man);
 SDL_FreeSurface(sta->paysage);
 SDL_FreeSurface(sta->fenetre);
 SDL_FreeSurface(manj->carre);
 Mix_FreeMusic(sta->music);
+}
+
+/*********************************************/
+
+int Collision_trigo(SDL_Rect pos1 ,SDL_Rect pos2 ){
+int rayon1 = (pos1.h/2);
+int rayon2 = (pos2.h/2);
+SDL_Rect centre1 = getrect(pos1.x+pos1.w/2,pos1.y+pos1.h/2,1,1);
+SDL_Rect centre2 = getrect(pos2.x+pos2.w/2,pos2.y+pos2.h/2,1,1);
+float dist = sqrt((centre1.x-centre2.x)*(centre1.x-centre2.x)+(centre1.y-centre2.y)*(centre1.y-centre2.y));
+/*printf (" rayon = %d \n",rayon1+rayon2);
+if (dist<70){
+printf ("dist =%f \n",dist);
+}*/
+if (dist<=(rayon1+rayon2)){
+return  1 ;
+}
+return 0 ;
+}
+
+/*********************************************/
+
+void Update_temp(enigme *en,stage *sta,int *rep){
+SDL_Color color={255,255,255};
+static char ch[50] ;
+en->suiv = SDL_GetTicks();
+if (en->suiv - en->prec>=1000){
+printf("%d \n",en->tmp);
+en->tmp ++ ;
+if (en->tmp<10){
+printf ("aaaaa \n");
+sprintf(ch,"00:0%d",en->tmp);
+}else if (en->tmp==10){
+sprintf(ch,"00:%d",en->tmp);
+}
+en->prec=en->suiv ;
+}
+en->temp=TTF_RenderText_Solid(en->font,ch,color);
+SDL_BlitSurface(en->temp,NULL,sta->fenetre,&en->post);
+if (en->tmp>10){
+en->tmp = 0 ;
+(*rep) = 0;
+}
+}
+
+/*********************************************/
+
+void Update_Vie (manr *manj){
+if (manj->vie>0){
+manj->vie -= 10 ;
+}
+if (manj->vie <=0 ){
+manj->score = 0 ;
+manj->spart.w = 0;
+}else{
+manj->spart.w =manj->vie ;
+}
+}
+
+/************************************************/
+
+void Update_score(manr *manj){
+SDL_Color color={255,255,255};
+char ch[50] ;
+printf("%d \n",manj->score);
+manj->score+=10 ;
+sprintf(ch,"%d XP",manj->score);
+manj->sscore=TTF_RenderText_Solid(manj->font,ch,color);
+}
+/************************************************/
+/*void Machine_Position (machine * mach, manr *manj,stage *sta){
+mach ->bpos.x = mach ->bpos.x - 20 ;
+if (Collision_trigo(manj->spos,mach->bpos)){
+Update_score(manj,sta);
+mach->i = rand()%3;
+intialmpos(mach,mach->i);
+}else if (collision(manj->pos1,mach->bpos)){
+mach->i = rand()%3;
+intialmpos(mach,mach->i);
+Update_Vie(mach,manj);
+}
+}
+
+/********************************************/
+
+void Update_enemie (enemie *enm,manr *manj){
+static int i ; 
+i++;
+static int j ;
+//enm->now =SDL_GetTicks();
+if (i%10==0){
+enm->part++;
+}
+//enm->prec= enm->now ;
+if (enm->posenm.x>manj->pos1.x && enm-> direc ==0){
+enm->direc = 1;
+intial_enemie(enm);
+}
+if (enm->posenm.x<manj->pos1.x && enm->direc ==1){
+enm->direc = 0;
+intial_enemie(enm);
+}
+if ((enm->posenm.x-manj->pos1.x)>=200 || (manj->pos1.x-enm->posenm.x)>=200){
+intialmpos(enm,j);
+if (enm->part<0 || enm->part >5){
+enm->part=0;
+//printf ("hereeee \n");
+}
+if (enm->posenm.x>manj->pos1.x){
+enm->posenm.x-=10;
+}else {
+enm->posenm.x+=10;
+}
+}else{
+ if (enm->part<13 || enm->part >16){
+enm->part=13;
+}
+if (enm->posenm.x>manj->pos1.x){
+enm ->bpos.x = enm ->bpos.x - 3 ;
+}else if (enm->posenm.x<manj->pos1.x){
+enm->bpos.x = enm ->bpos.x + 3 ;
+}
+if (Collision_trigo(manj->spos,enm->bpos)){
+j= rand()%3 ;
+Update_score(manj);
+intialmpos(enm,j);
+}else if (collision(manj->pos1,enm->bpos)){
+j= rand()%3 ;
+intialmpos(enm,j);
+Update_Vie(manj);
+}
+}
 }
 
