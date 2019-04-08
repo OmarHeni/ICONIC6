@@ -4,67 +4,94 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mixer.h>
 #include <SDL/SDL_ttf.h>
-#include"gamefonc.h"
-int main(){
-stage sta ;
-manr manj ;
-menus menu ;
-int rep = 0  ;
-int j,o ; 
-int ex= 0;
-int i;
-machine mach;
-enemie  enm;
-enigme en ; 
-sta.run=1;
-menu.j = -1;
-menu.h = 1;
-for (i=0;i<4;i++){
-menu.selec[i]=0;
-}
-intial(&en);
-i=5;
-SDL_Init(SDL_INIT_EVERYTHING);
+#include"work.h"
+int main(void)
+{
+char ch[10] ;
 TTF_Init();
-action (&sta,&manj,&menu,&mach,&enm);
-printf ("part %d | %d \n",enm.posenm.y,enm.posenm.x);
-Mix_PlayMusic(sta.music,-1);
-while ((i!=0)&&(i!=3)){
-i=showmenu(&sta,&menu);
+screen sc;
+background bg;
+perso p;
+vie v;
+texte t;
+rock r;
+SDL_Event event;
+SDL_Init(SDL_INIT_EVERYTHING);
+SDL_Event felsa;
+int detection=0;
+int sco=0;
+int done=1;
+char pause;
+
+
+//*******************************************************************************
+sc.s=SDL_SetVideoMode(1200,600,32, SDL_HWSURFACE |SDL_DOUBLEBUF);
+bg.image=SDL_LoadBMP("background.bmp");
+p.imageper=IMG_Load("Fichier 1.png");
+v.barrevie=IMG_Load("barrevie.png");
+r.imagerock=IMG_Load("rock.png");
+v.barre=IMG_Load("barre.png");
+v.sang=IMG_Load("sang.png");
+
+//*******************************************************************************
+SDL_Init(SDL_INIT_EVERYTHING);
+if( SDL_Init(SDL_INIT_EVERYTHING)!=0){
+printf("unabel to initialize SDL:%s\n",SDL_GetError());
+return (-1);
 }
-menufree(&sta,&menu);
-//sta.music = Mix_LoadMUS("music/games.mp3");
-Mix_PlayMusic(sta.music,-1);
-if (i==0){
-while (sta.run==1){
- Position_Update(&sta,&manj);
-Update_enemie (&enm,&manj);
- dispose(&sta,&manj,&mach,&enm);
-printf ("%d \n",sta.camera.x);
-//Machine_Position (&mach,&manj,&sta);
-if (sta.f!=NULL){
-Arduino_Update(&sta,&manj);
+//*******************************************************************************
+initialiser_score(&t ,&sc,&sco);
+//*******************************************************************************
+bg.pos.x=0;
+bg.pos.y=0;
+bg.pos.w=bg.image->w;
+bg.pos.h=bg.image->h;
+
+
+r.posrock.x=500;
+r.posrock.y=300;
+r.posrock.w=r.imagerock->w;
+r.posrock.h=r.imagerock->h;
+
+p.posper.x=20;
+p.posper.y=260;
+p.posper.w=p.imageper->w;
+p.posper.h=p.imageper->h;
+
+v.posvie.x=0;
+v.posvie.y=0;
+v.posbarre.x=0;
+v.posbarre.y=0;
+v.possang.x=59;
+v.possang.y=11;
+v.sizevie.w=v.sang->w;
+v.sizevie.h=v.sang->h;
+
+//*********************************************************************
+InitAff(sc,bg,p,v,r);
+//*********************************************************************
+detection=collision(&p,&r);
+//*************************************DEPLACEMENT*********************
+SDL_EnableKeyRepeat(20,20);
+SDL_BlitSurface(v.barre,NULL,sc.s,&v.posbarre);
+SDL_BlitSurface(v.sang,NULL,sc.s,&v.possang);
+while(done)
+{
+InitAff(sc,bg,p,v,r);
+deplacement(&p,event,done,&detection,&r,&felsa,&t ,&sc,&sco,&v);
+SDL_BlitSurface(t.txt,NULL,sc.s,&t.postexte);
+SDL_Flip(sc.s);
 }
-if (collision (manj.pos1,manj.pos2) ) {
-inital_button(&manj);
-while (en.Num_try <4 && rep == 0){
-intialiser_en(&en);
-o=en.Num_try ;
-while (en.Num_try ==o && rep == 0){
-j= menigme(&en,&sta);
-rep =reponse(&en,j);
-Update_temp(&en,&sta);
-}
-}
-}
-}
-}
-if (sta.f!=NULL){
-fclose(sta.f);
-}
-freeenigme(&en) ;
-freesurface(&sta,&manj);
-SDL_Quit();
+//*************************************DEPLACEMENT*********************
+
+
+pause=getchar();
+ TTF_CloseFont(t.police);
+    TTF_Quit();
+
+    SDL_FreeSurface(t.txt);
+    SDL_Quit();
+
 return 0 ;
 }
 
