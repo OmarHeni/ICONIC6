@@ -41,6 +41,8 @@ SDL_Rect camera ;
 /*****************************************/
 
 typedef struct {
+int x ;
+int y;
 int direc;
 int bol[5];
 TTF_Font *font ;
@@ -99,6 +101,7 @@ SDL_Rect bpos ;
 SDL_Surface *sen ;
 SDL_Rect enpart [17];
 SDL_Rect posenm ;
+int pos2 ;
 }enemie;
 
 
@@ -117,6 +120,7 @@ void freeenigme(enigme *en);
 void freesurface(stage *sta , manr *manj);
 void intial (enigme *en );
 int reponse (enigme *en,int j);
+void inital_button (manr *manj);
 void Update_enemie (enemie *enm,manr *manj);
-void Update_temp(enigme *en,stage *sta,int *rep);
+void Update_temp(enigme *en,stage *sta);
 #endif

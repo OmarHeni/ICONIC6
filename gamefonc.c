@@ -177,6 +177,7 @@ sta->fenetre=NULL ;
     char chemin[]="/dev/ttyACM0";
 manj->man =NULL ;
 manj->pos=0;
+manj->x =0; 
 SDL_Color color={255,255,255};
 manj->font= TTF_OpenFont("BebasNeue Book.ttf",32);
 menu->font= TTF_OpenFont("BebasNeue Book.ttf",32);
@@ -192,7 +193,7 @@ if(!menu->musicb) {
 //enm->prec = SDL_GetTicks();
 enm->direc = 0 ;
 intial_enemie(enm);
-enm->posenm=getrect(1500,300,41,107);
+enm->posenm=getrect(1000,300,41,107);
 mach ->mpos=getrect(955,300,255,146);
 setpos(menu->posm);
 sta->fenetre = SDL_SetVideoMode(1180,600,32,SDL_HWSURFACE | SDL_DOUBLEBUF);
@@ -224,6 +225,7 @@ menu->boutons[1]=IMG_Load("menu/menus1.jpg");
 menu->boutons[2]=IMG_Load("menu/menus2.jpg");
 menu->boutons[3]=IMG_Load("menu/menus3.jpg");
 manj->vie = 230 ;
+enm->pos2 = 900 ;
 intialmpos(enm,0);
 menu->poss[0]=getrect(454,199,263,49);
 menu->poss[1]=getrect(452,285,263,49);
@@ -497,7 +499,6 @@ en->Num_en = rand()%6+1 ;
 en->post= getrect(1000,0,0,0);
 en->font= TTF_OpenFont("BebasNeue Book.ttf",32);
 en->prec=SDL_GetTicks();
-printf ("num = %d \n",en->Num_en);
 en->tmp  = 0 ;
 // declaer les positon 
 en->posen[0]=getrect(12,185,551,108);
@@ -727,7 +728,6 @@ if (manj->pos2.x>0){
 SDL_BlitSurface(manj->carre,NULL,sta->fenetre,&manj->pos2);
 }
 //SDL_BlitSurface(mach->gun,NULL,sta->fenetre,&mach->mpos);
-printf ("%d | %d \n",enm->bpos.x,enm->bpos.y);
 if (!collision(enm->bpos,enm->posenm)){
 SDL_BlitSurface(enm->ball,NULL,sta->fenetre,&enm->bpos);
 }
@@ -803,6 +803,10 @@ case SDLK_LEFT :
 manj->bol[1]=0;
 break;
 }
+case SDL_MOUSEBUTTONDOWN :
+if (sta->event.button.button==SDL_BUTTON_LEFT){
+manj->x=sta->event.button.x;
+}
 break;
 }
 }
@@ -819,31 +823,31 @@ static int jp = 10 ;
 shield_pos(manj);
 eveent (sta,manj);
 if (manj->bol[0]==1){
+manj->x=0;
 if (manj->direc==1){
-printf ("here \n");
 inital_part(manj,0);
 manj->direc = 0 ;
 }
-manj->pos2.x-=5 ;
 if (manj->pos1.x<1000){
-manj->pos1.x+=10;
+manj->pos1.x+=5;
 }
 else if (manj->pos1.x>=1000){
 (sta->camera.x)+=5;
-
+manj->pos2.x-=5 ;
 }
 }if (manj->bol[1]==1){
+manj->x=0;
 if (manj->direc==0){
-printf ("here \n");
 inital_part(manj,1);
 manj->direc = 1 ;
 }
-manj->pos2.x+=5 ;
+
 if (manj->pos1.x>200){
-manj->pos1.x-=10;
+manj->pos1.x-=5;
 }
 else if (manj->pos1.x<=200){
 (sta->camera.x)-=5;
+manj->pos2.x+=5 ;
 }
 }if (manj->bol[2]==1){
 manj->pos1.y-=jp ;
@@ -851,8 +855,21 @@ o++;
 if (o%2==0){
 jp-=1 ;
 }
+
+}else if (manj->x!=0) {
+if (manj->x>manj->pos1.x){
+manj->pos1.x+=10 ;
+if (manj->pos1.x>manj->x){
+manj->x = 0;
 }
-if (sta->camera.x>=(2000-800)){
+}else if (manj->x<manj->pos1.x){
+manj->pos1.x-=10 ;
+if (manj->pos1.x<manj->x){
+manj->x = 0;
+}
+}
+}
+if (sta->camera.x>=800){
 sta->camera.x=0;
 }
 if (manj->pos1.y>=300){
@@ -893,18 +910,24 @@ return  1 ;
 }
 return 0 ;
 }
+/******************************************/
+void inital_button (manr *manj){
+int i = 0 ;
+for (i=0;i<5;i++){
+manj->bol[i]=0;
+}
+}
 
 /*********************************************/
 
-void Update_temp(enigme *en,stage *sta,int *rep){
+void Update_temp(enigme *en,stage *sta){
+SDL_Rect rect ;
 SDL_Color color={255,255,255};
 static char ch[50] ;
 en->suiv = SDL_GetTicks();
 if (en->suiv - en->prec>=1000){
-printf("%d \n",en->tmp);
 en->tmp ++ ;
 if (en->tmp<10){
-printf ("aaaaa \n");
 sprintf(ch,"00:0%d",en->tmp);
 }else if (en->tmp==10){
 sprintf(ch,"00:%d",en->tmp);
@@ -912,10 +935,15 @@ sprintf(ch,"00:%d",en->tmp);
 en->prec=en->suiv ;
 }
 en->temp=TTF_RenderText_Solid(en->font,ch,color);
+SDL_GetClipRect(en->temp,&rect);
+rect.x=en->post.x;
+rect.y=en->post.y;
+rect.w+=6;
+SDL_BlitSurface(sta->paysage,&rect,sta->fenetre,&rect);
 SDL_BlitSurface(en->temp,NULL,sta->fenetre,&en->post);
-if (en->tmp>10){
+if (en->tmp==10){
 en->tmp = 0 ;
-(*rep) = 0;
+en->Num_try-- ;
 }
 }
 
@@ -938,7 +966,6 @@ manj->spart.w =manj->vie ;
 void Update_score(manr *manj){
 SDL_Color color={255,255,255};
 char ch[50] ;
-printf("%d \n",manj->score);
 manj->score+=10 ;
 sprintf(ch,"%d XP",manj->score);
 manj->sscore=TTF_RenderText_Solid(manj->font,ch,color);
@@ -967,34 +994,49 @@ static int j ;
 if (i%10==0){
 enm->part++;
 }
+printf ("%d \n",enm->part);
 //enm->prec= enm->now ;
-if (enm->posenm.x>manj->pos1.x && enm-> direc ==0){
+if (( enm->posenm.x>enm->pos2 &&enm-> direc ==0) ){
 enm->direc = 1;
 intial_enemie(enm);
 }
-if (enm->posenm.x<manj->pos1.x && enm->direc ==1){
+if ((enm-> direc == 1 && enm->posenm.x<enm->pos2)){
 enm->direc = 0;
 intial_enemie(enm);
 }
-if ((enm->posenm.x-manj->pos1.x)>=200 || (manj->pos1.x-enm->posenm.x)>=200){
+if ((enm->posenm.x-manj->pos1.x)>=200 || (manj->pos1.x-enm->posenm.x)>=200 ||manj->pos1.x==1000 || manj->pos1.x==200  ){
 intialmpos(enm,j);
 if (enm->part<0 || enm->part >5){
 enm->part=0;
 //printf ("hereeee \n");
 }
-if (enm->posenm.x>manj->pos1.x){
-enm->posenm.x-=10;
+printf ("%d \n",enm->pos2);
+if (enm->posenm.x>enm->pos2){
+enm->posenm.x-=6;
+if ((enm->posenm.x)<=enm->pos2){
+enm->pos2=rand()%1180;
+}
 }else {
-enm->posenm.x+=10;
+enm->posenm.x+=6;
+if ((enm->posenm.x)>=enm->pos2){
+enm->pos2=rand()%1180;
+}
 }
 }else{
  if (enm->part<13 || enm->part >16){
 enm->part=13;
 }
 if (enm->posenm.x>manj->pos1.x){
-enm ->bpos.x = enm ->bpos.x - 3 ;
+enm ->bpos.x = enm ->bpos.x - 6 ;
 }else if (enm->posenm.x<manj->pos1.x){
-enm->bpos.x = enm ->bpos.x + 3 ;
+enm->bpos.x = enm ->bpos.x + 6 ;
+}
+if (enm->posenm.x>manj->pos1.x && enm-> direc == 0) {
+enm->direc = 1;
+intial_enemie(enm);
+}else if (enm->posenm.x<manj->pos1.x && enm->direc == 1){
+enm->direc = 0;
+intial_enemie(enm);
 }
 if (Collision_trigo(manj->spos,enm->bpos)){
 j= rand()%3 ;
